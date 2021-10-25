@@ -36,6 +36,7 @@ public class ConsumerKafkaConfig {
     public ConcurrentKafkaListenerContainerFactory<String, String> kafkaListenerContainerFactory() {
         var factory = new ConcurrentKafkaListenerContainerFactory<String, String>();
         factory.setConsumerFactory(consumerFactory());
+        factory.setConcurrency(2);
         return factory;
     }
 
