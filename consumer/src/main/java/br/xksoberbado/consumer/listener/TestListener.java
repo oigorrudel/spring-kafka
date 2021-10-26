@@ -1,6 +1,7 @@
 package br.xksoberbado.consumer.listener;
 
 import br.xksoberbado.consumer.custom.PersonCustomListener;
+import br.xksoberbado.consumer.model.City;
 import br.xksoberbado.consumer.model.Person;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -34,11 +35,18 @@ public class TestListener {
 //    }
 
     //    @KafkaListener(topics = "person-topic", groupId = "group-1", containerFactory = "personKafkaListenerContainerFactory")
-//    @PersonCustomListener(groupId = "group-1")
-//    public void create(Person person) {
+    @PersonCustomListener(groupId = "group-1")
+    public void create(Person person) {
 //        log.info("Thread: {}", Thread.currentThread().getId());
-//        log.info("Criar: {}", person);
-//    }
+        log.info("Criar pessoa: {}", person);
+    }
+
+
+    @KafkaListener(topics = "city-topic", groupId = "group-1", containerFactory = "jsonKafkaListenerContainerFactory")
+    public void create(City city) {
+        log.info("Criar cidade: {}", city);
+    }
+
 //
 //    //    @KafkaListener(topics = "person-topic", groupId = "group-2", containerFactory = "personKafkaListenerContainerFactory")
 //    @PersonCustomListener(groupId = "group-2")

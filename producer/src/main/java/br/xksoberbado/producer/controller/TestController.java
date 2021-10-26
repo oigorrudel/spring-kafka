@@ -1,5 +1,6 @@
 package br.xksoberbado.producer.controller;
 
+import br.xksoberbado.producer.model.City;
 import br.xksoberbado.producer.model.Person;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -35,6 +36,11 @@ public class TestController {
     @GetMapping("send-person")
     public void sendPerson() {
         jsonKafkaTemplate.send("person-topic", new Person("João", new Random().nextInt(50)));
+    }
+
+    @GetMapping("send-city")
+    public void sendCity() {
+        jsonKafkaTemplate.send("city-topic", new City("Porto Alegre", "RS"));
     }
 
 }
