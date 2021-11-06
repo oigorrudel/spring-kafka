@@ -50,8 +50,9 @@ public class TestListener {
 
 
     @KafkaListener(topics = "city-topic", groupId = "group-1", containerFactory = "jsonKafkaListenerContainerFactory")
-    public void create(City city) {
-        log.info("Criar cidade: {}", city);
+    public void create(List<City> cities) {
+//        log.info("Criar cidade: {}", city);
+        log.info("Cidades: {}", cities);
     }
 
 //

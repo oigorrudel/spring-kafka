@@ -14,6 +14,7 @@ import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.listener.RecordInterceptor;
+import org.springframework.kafka.support.converter.BatchMessagingMessageConverter;
 import org.springframework.kafka.support.converter.JsonMessageConverter;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 
@@ -86,7 +87,9 @@ public class ConsumerKafkaConfig {
     public ConcurrentKafkaListenerContainerFactory jsonKafkaListenerContainerFactory() {
         var factory = new ConcurrentKafkaListenerContainerFactory();
         factory.setConsumerFactory(jsonConsumerFactory());
-        factory.setMessageConverter(new JsonMessageConverter());
+//        factory.setMessageConverter(new JsonMessageConverter());
+        factory.setMessageConverter(new BatchMessagingMessageConverter(new JsonMessageConverter()));
+        factory.setBatchListener(true);
         return factory;
     }
 
