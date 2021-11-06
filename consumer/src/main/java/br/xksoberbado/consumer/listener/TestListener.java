@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.annotation.TopicPartition;
 import org.springframework.kafka.support.KafkaHeaders;
+import org.springframework.messaging.Message;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.stereotype.Component;
 
@@ -50,9 +51,14 @@ public class TestListener {
 
 
     @KafkaListener(topics = "city-topic", groupId = "group-1", containerFactory = "jsonKafkaListenerContainerFactory")
-    public void create(List<City> cities) {
+    public void create(List<Message<City>> messages) {
 //        log.info("Criar cidade: {}", city);
-        log.info("Cidades: {}", cities);
+//        log.info("Cidades: {}", cities);
+//        log.info("Partições: {}", partitions);
+        log.info("Messages: {}", messages);
+        var city = messages.get(0).getPayload();
+        log.info("Cidade: {}", city);
+        log.info("Headers: {}", messages.get(0).getHeaders());
     }
 
 //
