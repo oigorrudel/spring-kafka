@@ -47,6 +47,7 @@ public class TestListener {
     public void create(Person person) {
 //        log.info("Thread: {}", Thread.currentThread().getId());
         log.info("Criar pessoa: {}", person);
+        throw new IllegalArgumentException("Teste");
     }
 
 
