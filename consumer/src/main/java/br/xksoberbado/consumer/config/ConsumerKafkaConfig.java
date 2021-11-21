@@ -1,11 +1,14 @@
 package br.xksoberbado.consumer.config;
 
+import java.util.HashMap;
 import br.xksoberbado.consumer.model.Person;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
+import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.context.annotation.Bean;
@@ -14,15 +17,17 @@ import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
-import org.springframework.kafka.listener.CommonErrorHandler;
+import org.springframework.kafka.core.DefaultKafkaProducerFactory;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.core.ProducerFactory;
+import org.springframework.kafka.listener.DeadLetterPublishingRecoverer;
 import org.springframework.kafka.listener.DefaultErrorHandler;
 import org.springframework.kafka.listener.RecordInterceptor;
 import org.springframework.kafka.support.converter.BatchMessagingMessageConverter;
 import org.springframework.kafka.support.converter.JsonMessageConverter;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
+import org.springframework.kafka.support.serializer.JsonSerializer;
 import org.springframework.util.backoff.FixedBackOff;
-
-import java.util.HashMap;
 
 @Slf4j
 @EnableKafka
@@ -73,8 +78,17 @@ public class ConsumerKafkaConfig {
         return factory;
     }
 
+    public ProducerFactory<String, Person> pf() {
+        var configs = new HashMap<String, Object>();
+        configs.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaProperties.getBootstrapServers());
+        configs.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+        configs.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
+        return new DefaultKafkaProducerFactory<>(configs, new StringSerializer(), new JsonSerializer<>());
+    }
+
     private DefaultErrorHandler defaultErrorHandler() {
-        return new DefaultErrorHandler(new FixedBackOff(1000l, 2));
+        var recoverer = new DeadLetterPublishingRecoverer(new KafkaTemplate<>(pf()));
+        return new DefaultErrorHandler(recoverer, new FixedBackOff(1000l, 2));
     }
 
     private RecordInterceptor<String, Person> exampleInterceptor() {

@@ -1,17 +1,13 @@
 package br.xksoberbado.consumer.listener;
 
+import java.util.List;
 import br.xksoberbado.consumer.custom.PersonCustomListener;
 import br.xksoberbado.consumer.model.City;
 import br.xksoberbado.consumer.model.Person;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.kafka.annotation.TopicPartition;
-import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.Message;
-import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.stereotype.Component;
-
-import java.util.List;
 
 @Slf4j
 @Component
@@ -48,6 +44,11 @@ public class TestListener {
 //        log.info("Thread: {}", Thread.currentThread().getId());
         log.info("Criar pessoa: {}", person);
         throw new IllegalArgumentException("Teste");
+    }
+
+    @PersonCustomListener(topics= "person-topic.DLT", groupId = "group-1")
+    public void dlt(Person person) {
+        log.info("DLT: {}", person);
     }
 
 
