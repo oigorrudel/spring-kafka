@@ -6,7 +6,9 @@ import br.xksoberbado.consumer.model.City;
 import br.xksoberbado.consumer.model.Person;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.Message;
+import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.stereotype.Component;
 
 @Slf4j
@@ -40,15 +42,15 @@ public class TestListener {
 
     //    @KafkaListener(topics = "person-topic", groupId = "group-1", containerFactory = "personKafkaListenerContainerFactory")
     @PersonCustomListener(groupId = "group-1")
-    public void create(Person person) {
+    public void create(Person person, @Header(KafkaHeaders.RECEIVED_PARTITION_ID) long partition) {
 //        log.info("Thread: {}", Thread.currentThread().getId());
-        log.info("Criar pessoa: {}", person);
+        log.info("Criar pessoa: {} Partition: {}", person, partition);
         throw new IllegalArgumentException("Teste");
     }
 
     @PersonCustomListener(topics= "person-topic.DLT", groupId = "group-1")
-    public void dlt(Person person) {
-        log.info("DLT: {}", person);
+    public void dlt(Person person, @Header(KafkaHeaders.RECEIVED_PARTITION_ID) long partition) {
+        log.info("DLT: {} Partition: {}", person, partition);
     }
 
 

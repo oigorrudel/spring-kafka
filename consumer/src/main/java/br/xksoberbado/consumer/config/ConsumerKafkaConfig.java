@@ -7,6 +7,7 @@ import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -87,7 +88,9 @@ public class ConsumerKafkaConfig {
     }
 
     private DefaultErrorHandler defaultErrorHandler() {
-        var recoverer = new DeadLetterPublishingRecoverer(new KafkaTemplate<>(pf()));
+        var recoverer = new DeadLetterPublishingRecoverer(
+            new KafkaTemplate<>(pf()),
+            (consumerRecord, exception) -> new TopicPartition(consumerRecord.topic() + ".DLT", -1));
         return new DefaultErrorHandler(recoverer, new FixedBackOff(1000l, 2));
     }
 
